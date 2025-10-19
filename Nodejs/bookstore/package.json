@@ -1,0 +1,19 @@
+{
+  "name": "bookstore",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --watch index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@typed/node": "^6.7.0",
+    "@types/express": "^5.0.3"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
