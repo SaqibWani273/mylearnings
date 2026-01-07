@@ -1,3 +1,0 @@
-
-1760864641414 : DELETE | /deletebook/1
-1760864657074 : GET | /books

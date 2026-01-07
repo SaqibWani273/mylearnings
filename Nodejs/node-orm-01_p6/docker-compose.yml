@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres:17.4
+    ports:
+      - 8080:5432
+    environment:
+      POSTGRES_USER: saqibw
+      POSTGRES_PASSWORD: saqibwani
+      POSTGRES_DB: booksstore
