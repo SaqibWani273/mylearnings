@@ -5,12 +5,33 @@ const db = require("../src/index");
 const booksTable = require("../models/book.model");
 const books = require("../tempdb/books");
 const authorsTable = require("../models/author.model");
-const { eq } = require("drizzle-orm");
+const { sql } = require("drizzle-orm");
+const { eq, ilike } = require("drizzle-orm");
 
 // exports.getAllBooks = (req, res) => res.json(books);
 exports.getAllBooks = async (req, res) => {
-  const books = await db.select().from(booksTable);
-  console.log(`books -> ${books}`);
+  const queryp = req.query.search;
+  var books;
+  if (queryp != undefined) {
+    books = await db
+      .select()
+      .from(booksTable)
+      // .where(ilike(booksTable.description, `%${queryp}%`)); //normal search
+      .where(
+        sql`to_tsvector('english', ${booksTable.description}) @@ to_tsquery('english', ${queryp})`
+      );
+
+    return res.json(books);
+    console.log(`books -> ${books.toString()}`);
+    if (books.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No book found with the search criteria" });
+    }
+  }
+
+  books = await db.select().from(booksTable);
+
   return res.json(books);
 };
 
