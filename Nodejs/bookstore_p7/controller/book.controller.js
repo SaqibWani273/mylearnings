@@ -42,6 +42,7 @@ exports.getBookById = async (req, res) => {
     .select()
     .from(booksTable)
     .where(eq(booksTable.id, id))
+    .leftJoin(authorsTable, eq(authorsTable.id, booksTable.authorId))
     .limit(1);
   // const book = await db.select().from(booksTable).where((table)=> eq(table.id, id));
   console.log("book = " + book);
