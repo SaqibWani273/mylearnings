@@ -85,5 +85,59 @@ const login = async (req, res) => {
     sessionId: `${userSession.id}`,
   });
 };
-module.exports = { register, deleteUser, login };
+const profile = async (req, res) => {
+  //   const sessionId = req.headers["session-id"];
+  //   if (!sessionId) {
+  //     return res.status(400).json({ message: "session-id header is required" });
+  //   }
+  //   const [data] = await db
+  //     .select({
+  //       id: usersTable.id,
+  //       name: usersTable.name,
+  //       email: usersTable.email,
+  //     })
+  //     .from(userSessionsTable)
+  //     /*
+  //     Rule of thumb
+
+  // Auth → INNER JOIN
+
+  // Optional relations → LEFT JOIN
+
+  // RIGHT JOIN → almost never needed in APIs
+  //     */
+  //     .innerJoin(usersTable, eq(userSessionsTable.userId, usersTable.id))
+
+  //     .where(eq(userSessionsTable.id, sessionId));
+  //   if (!data) {
+  //     return res.status(400).json({ message: "Invalid session-id" });
+  //   }
+  //   return res.status(200).json({ data: data });
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  return res.status(200).json({ data: req.user });
+};
+const updateProfile = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ message: "name is required" });
+  }
+  const [updatedUser] = await db
+    .update(usersTable)
+    .set({ name })
+    .where(eq(usersTable.id, req.user.id))
+    .returning({
+      id: usersTable.id,
+      name: usersTable.name,
+      email: usersTable.email,
+    });
+  return res
+    .status(200)
+    .json({ message: "Profile updated successfully", data: updatedUser });
+};
+module.exports = { register, deleteUser, login, profile, updateProfile };
 // export default register;

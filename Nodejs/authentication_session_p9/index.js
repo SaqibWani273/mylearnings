@@ -1,9 +1,11 @@
 const express = require("express");
 const app = express();
 const authRouter = require("./routes/auth.router");
+const { authMiddleware } = require("./middleware/authmiddleware");
 // const PORT = process.env.PORT ?? 8000;
 const PORT = 8000;
 app.use(express.json());
+app.use(authMiddleware);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
