@@ -1,6 +1,7 @@
 const db = require("../src/db");
 const { usersTable, userSessionsTable } = require("../src/db/schema");
 const { eq } = require("drizzle-orm");
+const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
   const sessionId = req.headers["session-id"];
@@ -35,4 +36,21 @@ RIGHT JOIN → almost never needed in APIs
   next();
   //   return res.status(200).json({ data: data });
 };
-module.exports = { authMiddleware };
+const tokenMiddleware = async (req, res, next) => {
+  const tokenAuth = req.headers["authorization"];
+  if (!tokenAuth) {
+    return next();
+  }
+  if (!tokenAuth.startsWith("Bearer ")) {
+    return res.status(400).json({ message: "Invalid authorization format" });
+  }
+  const token = tokenAuth.split(" ")[1];
+  if (!token) {
+    return next();
+  }
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+  req.user = decodedToken;
+  return next();
+};
+module.exports = { authMiddleware, tokenMiddleware };

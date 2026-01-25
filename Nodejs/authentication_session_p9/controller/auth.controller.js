@@ -2,6 +2,7 @@ const { randomBytes, createHmac } = require("node:crypto");
 const db = require("../src/db");
 const { usersTable, userSessionsTable } = require("../src/db/schema");
 const { eq } = require("drizzle-orm");
+const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   try {
@@ -73,16 +74,17 @@ const login = async (req, res) => {
   if (user.password !== passwordHash) {
     return res.status(400).json({ message: "Invalid password" });
   }
-  const [userSession] = await db
-    .insert(userSessionsTable)
-    .values({ userId: user.id })
-    .returning({
-      id: userSessionsTable.id,
-    });
+  const token = jwt.sign(user, process.env.JWT_SECRET);
+  // const [userSession] = await db
+  //   .insert(userSessionsTable)
+  //   .values({ userId: user.id })
+  //   .returning({
+  //     id: userSessionsTable.id,
+  //   });
   return res.status(200).json({
     message: "Login successful",
     userId: `${user.id}`,
-    sessionId: `${userSession.id}`,
+    token: `${token}`,
   });
 };
 const profile = async (req, res) => {
@@ -114,7 +116,7 @@ const profile = async (req, res) => {
   //   }
   //   return res.status(200).json({ data: data });
   if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Unauthorized", user: req.user });
   }
   return res.status(200).json({ data: req.user });
 };
