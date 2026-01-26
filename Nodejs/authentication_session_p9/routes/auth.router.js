@@ -1,4 +1,5 @@
 const express = require("express");
+const { ensureAuthMiddleware } = require("../middleware/authmiddleware");
 
 const router = express.Router();
 const {
@@ -9,9 +10,9 @@ const {
   updateProfile,
 } = require("../controller/auth.controller");
 router.post("/register", register);
-router.delete("/delete", deleteUser);
+router.delete("/delete", ensureAuthMiddleware, deleteUser);
 router.get("/login", login);
-router.get("/profile", profile);
-router.patch("/update", updateProfile);
+router.get("/profile", ensureAuthMiddleware, profile);
+router.patch("/update", ensureAuthMiddleware, updateProfile);
 
 module.exports = router;

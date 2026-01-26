@@ -1,12 +1,16 @@
 const { randomBytes, createHmac } = require("node:crypto");
 const db = require("../src/db");
-const { usersTable, userSessionsTable } = require("../src/db/schema");
+const {
+  usersTable,
+  userSessionsTable,
+  userRoleEnum,
+} = require("../src/db/schema");
 const { eq } = require("drizzle-orm");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   try {
-    const { email, name, password } = req.body;
+    const { email, name, password, isAdmin } = req.body;
     if (!email || !name || !password) {
       return res
         .status(400)
@@ -21,6 +25,7 @@ const register = async (req, res) => {
     }
     const salt = randomBytes(256).toString("hex");
     const hashedPw = createHmac("sha256", salt).update(password).digest("hex");
+    const role = isAdmin === true ? "ADMIN" : "USER";
     const [user] = await db
       .insert(usersTable)
       .values({
@@ -28,6 +33,7 @@ const register = async (req, res) => {
         password: hashedPw,
         salt,
         email,
+        role,
       })
       .returning({
         id: usersTable.id,
@@ -58,8 +64,10 @@ const login = async (req, res) => {
     .select({
       id: usersTable.id,
       email: usersTable.email,
+      name: usersTable.name,
       password: usersTable.password,
       salt: usersTable.salt,
+      role: usersTable.role,
     })
     .from(usersTable)
     .where(eq(usersTable.email, email));
@@ -115,15 +123,15 @@ const profile = async (req, res) => {
   //     return res.status(400).json({ message: "Invalid session-id" });
   //   }
   //   return res.status(200).json({ data: data });
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized", user: req.user });
-  }
+  // if (!req.user) {
+  //   return res.status(401).json({ message: "Unauthorized", user: req.user });
+  // }
   return res.status(200).json({ data: req.user });
 };
 const updateProfile = async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+  // if (!req.user) {
+  //   return res.status(401).json({ message: "Unauthorized" });
+  // }
   const { name } = req.body;
   if (!name) {
     return res.status(400).json({ message: "name is required" });

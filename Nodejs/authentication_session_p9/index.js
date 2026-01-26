@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const authRouter = require("./routes/auth.router");
+const adminRouter = require("./routes/admin.router");
 const {
   authMiddleware,
   tokenMiddleware,
@@ -17,3 +18,4 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Authentication Session ");
 });
 app.use("/auth", authRouter);
+app.use("/admin", adminRouter);
