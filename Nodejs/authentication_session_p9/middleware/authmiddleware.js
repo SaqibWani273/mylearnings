@@ -3,6 +3,13 @@ const { usersTable, userSessionsTable } = require("../src/db/schema");
 const { eq } = require("drizzle-orm");
 const jwt = require("jsonwebtoken");
 
+/**
+ *
+ * @param { import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ */
+
 const authMiddleware = async (req, res, next) => {
   const sessionId = req.headers["session-id"];
   if (!sessionId) {
