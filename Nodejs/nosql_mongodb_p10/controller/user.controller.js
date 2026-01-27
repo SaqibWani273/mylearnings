@@ -55,4 +55,21 @@ const login = async (req, res) => {
   );
   return res.status(200).json({ message: "Login successful", token: token });
 };
+const aggregateUsers = async (req, res) => {
+  [
+    {
+      $project: {
+        name: "$title",
+      },
+    },
+    {
+      $lookup: {
+        from: "comments",
+        localField: "_id",
+        foreignField: "movie_id",
+        as: "comments",
+      },
+    },
+  ];
+};
 module.exports = { register, login };
