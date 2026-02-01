@@ -26,7 +26,15 @@ const createToken = (user) => {
     process.env.JWT_SECRET,
   );
 };
+const validateToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (_) {
+    return null;
+  }
+};
 module.exports = {
   existingUser,
   createToken,
+  validateToken,
 };

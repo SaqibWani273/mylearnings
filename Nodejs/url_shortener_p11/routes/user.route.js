@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const db = require("../src/index");
 const { usersTable } = require("../src/db/models");
-const { registerRequestSchema } = require("../validations/request.validations");
+const {
+  registerRequestSchema,
+  loginRequestSchema,
+} = require("../validations/request.validations");
 const { hashedPassword } = require("../utils/hash.utils");
 const { z } = require("zod");
 const { createToken, existingUser } = require("../utils/user.utils");
@@ -38,7 +41,7 @@ router.post("/register", async (req, res) => {
     .json({ message: "User registered successfully", id: insertedUser.id });
 });
 router.post("/login", async (req, res) => {
-  const validationResult = await registerRequestSchema.safeParseAsync(req.body);
+  const validationResult = await loginRequestSchema.safeParseAsync(req.body);
   if (validationResult.error) {
     return res
       .status(400)

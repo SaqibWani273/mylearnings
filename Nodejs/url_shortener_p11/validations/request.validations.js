@@ -7,6 +7,16 @@ const registerRequestSchema = z.object({
   email: z.email(),
   password: z.string().min(3),
 });
+const loginRequestSchema = z.object({
+  email: z.email(),
+  password: z.string().min(3),
+});
+const shortenRequestSchema = z.object({
+  url: z.url(),
+  shortUrl: z.string().optional(),
+});
 module.exports = {
   registerRequestSchema,
+  loginRequestSchema,
+  shortenRequestSchema,
 };
