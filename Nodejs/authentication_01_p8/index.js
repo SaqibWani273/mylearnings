@@ -6,7 +6,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 const emails = new Set();
-const userDiary = {};
+const userDiary = {};// it acts as db 
 app.post("/register", (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {

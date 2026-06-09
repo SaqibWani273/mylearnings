@@ -43,23 +43,33 @@ RIGHT JOIN → almost never needed in APIs
   return next();
   //   return res.status(200).json({ data: data });
 };
+///this middleware doesnot prevent the user from going to the controller,
+//but it will put the user in the request, if the token is valid
 const tokenMiddleware = async (req, res, next) => {
+  //we check if the request has an authorization header
   const tokenAuth = req.headers["authorization"];
   if (!tokenAuth) {
+    //next means that we go to the next middleware or controller
     return next();
   }
+  //if token is there, we check if it starts with Bearer
   if (!tokenAuth.startsWith("Bearer ")) {
     return res.status(400).json({ message: "Invalid authorization format" });
   }
+  //if it starts with Bearer, we extract the token
   const token = tokenAuth.split(" ")[1];
   if (!token) {
     return next();
   }
+  //docode token to get the user
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
+//put the user in the request
   req.user = decodedToken;
   return next();
 };
+
+///it makes sure that the user is authenticated, but 
+///this middleware should be used after the tokenMiddleware
 const ensureAuthMiddleware = async (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({ message: "UnAuthenticated User" });

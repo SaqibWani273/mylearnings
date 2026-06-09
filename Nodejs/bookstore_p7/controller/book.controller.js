@@ -20,14 +20,14 @@ exports.getAllBooks = async (req, res) => {
       .where(
         sql`to_tsvector('english', ${booksTable.description}) @@ to_tsquery('english', ${queryp})`
       );
-
-    return res.json(books);
-    console.log(`books -> ${books.toString()}`);
+ console.log(`books -> ${books.toString()}`);
     if (books.length === 0) {
       return res
         .status(404)
         .json({ error: "No book found with the search criteria" });
     }
+    return res.json(books);
+   
   }
 
   books = await db.select().from(booksTable);
